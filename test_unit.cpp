@@ -30,14 +30,16 @@ TEST(UnitaryTest, EquationTest) {
 
 // Test de Problem
 TEST(UnitaryTest, ProblemTest) {
-    // Cas normal
-    UniformMesh* mesh = new UniformMesh(0, 10, 1);
-    Problem problem(mesh);
+    // Cas normal : avec un maillage valide
+    UniformMesh* valid_mesh = new UniformMesh(0, 10, 1);
+    Problem problem(valid_mesh);
     EXPECT_NO_THROW(problem.solve());
 
-    // Cas limite
-    Problem invalid_problem(nullptr);
-    EXPECT_THROW(invalid_problem.solve(), std::runtime_error);
+    // Cas limite : avec un maillage nul
+    IMesh* null_mesh = nullptr;
+    EXPECT_THROW({
+        Problem invalid_problem(null_mesh);
+    }, std::invalid_argument); // Vérifie que std::invalid_argument est levé
 }
 
 int main(int argc, char **argv) {

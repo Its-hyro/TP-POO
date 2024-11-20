@@ -3,20 +3,29 @@
 
 #include "IMesh.h"
 
-// Définition de la classe UniformMesh qui hérite de IMesh
+// Classe représentant un maillage uniforme
 class UniformMesh : public IMesh {
 private:
-    double x_min, x_max, dx;
-    int num_points;
+    double x_min, x_max, dx;  // Bornes du maillage et pas entre les points
+    int num_points;          // Nombre de points dans le maillage
 
 public:
-    // Constructeur de la classe UniformMesh
+    // Constructeur
+    // x_min : borne inférieure
+    // x_max : borne supérieure
+    // dx : pas entre les points
     UniformMesh(double x_min, double x_max, double dx);
 
-    // Méthodes qui redéfinissent celles de la classe IMesh
+    // Retourne la borne inférieure du maillage
     double getXMin() const override;
+
+    // Retourne la borne supérieure du maillage
     double getXMax() const override;
+
+    // Retourne le nombre de points du maillage
     int getNumPoints() const override;
+
+    // Retourne la position du point d'indice i
     double getX(int i) const override;
 };
 
