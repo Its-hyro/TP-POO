@@ -27,6 +27,7 @@ public:
 
     // Retourne la position du point d'indice i
     double getX(int i) const override;
+    int x_size() const override {return num_points;}
 };
 
 #endif // UNIFORMMESH_H

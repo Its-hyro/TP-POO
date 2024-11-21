@@ -3,7 +3,7 @@
 #include <stdexcept> 
 
 // Constructeur par défaut
-Problem::Problem(IMesh* mesh) : mesh(mesh), num_iterations(1) {
+Problem::Problem(IMesh* mesh) : mesh(mesh), num_iterations(1), u_k(mesh), u_kp1(mesh) {
     if (!mesh) { 
         throw std::invalid_argument("Le maillage est nul.");
     }
@@ -22,8 +22,16 @@ void Problem::solve() {
     }
     // Resolution du probleme 
     std::cout << "--- Solve problem ---" << std::endl; 
-    for (int iter = 1; iter <= num_iterations; ++iter) { // Boucle sur le nbr d'operations 
+    equation.compute_boundary_condition(u_k, mesh);
+    
+    for (int iter = 1; iter <= num_iterations; ++iter){
         std::cout << "--- Iterative methode iteration : " << iter << " ---" << std::endl;
-        equation.compute(mesh);  // Appel de compute() avec le maillage
+        equation.compute_boundary_condition(u_kp1, mesh);
+        equation.compute(mesh);
+
+        for (size_t i=0; i < u_k.size(); ++i){
+            u_k[i] = u_kp1[i];
+        }
     }
+
 }

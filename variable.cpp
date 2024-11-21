@@ -3,11 +3,11 @@
 
 // Constructeur de la classe variable 
 Variable::Variable(IMesh* mesh) : mesh(mesh) {
-// Initialiser le vecteur à la taille du maillage
+
     if (!mesh){
         throw std :: invalid_argument("le maillage est nul ");
     }
-    values.resize(mesh->getNumPoints(), 0.0); 
+    values.resize(mesh->x_size(), 0.0); 
 }
 
 // Ajouter une valeur au vecteur 
