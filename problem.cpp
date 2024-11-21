@@ -12,7 +12,7 @@ Problem::Problem(IMesh* mesh) : mesh(mesh), num_iterations(1) {
 
 // Constructeur avec spécification du nombre d'itérations
 Problem::~Problem() {
-    delete mesh;  // Nettoyage du pointeur
+   // delete mesh;  // Nettoyage du pointeur
 }
 
 // Méthode pour résoudre le problème

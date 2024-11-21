@@ -5,18 +5,19 @@
 
 int main() { 
     try {
-        std::cout << "Début du programme principal." << std::endl; // Message de début
+        std::cout << "Début du programme principal." << std::endl; 
 
-        // Création d'un maillage uniforme
-        IMesh* mesh = new UniformMesh(0.0, 1.0, 0.2);
+        // Création d'un maillage uniforme avec un pointeur unique 
+        std::unique_ptr <IMesh> mesh (new UniformMesh(0.0, 1.0, 0.2));
 
         // Création d'une instance de Problem avec le maillage
-        Problem problem(mesh); // Utilisation du constructeur de copie
-        problem.solve();  // Appel à la méthode solve()
+        Problem problem(mesh.get()); 
+        problem.solve();  
 
-        std::cout << "Fin du programme principal." << std::endl; // Message de fin
-    } catch (const std::exception& e) { // Gestion des exceptions
-        std::cerr << "Erreur : " << e.what() << std::endl; // Affichage du message d'erreur
+        std::cout << "Fin du programme principal." << std::endl; 
+    } catch (const std::exception& e) { 
+        std::cerr << "Erreur : " << e.what() << std::endl; 
+        return 1;
     }
 
     return 0;
