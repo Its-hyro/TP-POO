@@ -23,7 +23,7 @@ TEST(UnitaryTest, EquationTest) {
     // Cas normal
     UniformMesh mesh(0, 10, 1);
     EXPECT_NO_THROW(eq.compute(&mesh));
-
+    
     // Cas limite
     EXPECT_THROW(eq.compute(nullptr), std::invalid_argument);
 }
