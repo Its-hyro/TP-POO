@@ -25,7 +25,3 @@ int UniformMesh::getNumPoints() const {
     return num_points;
 }
 
-// Redéfinition de la méthode getX() qui retourne la position d'un point donné
-double UniformMesh::getX(int i) const {
-    return x_min + i * dx;
-}

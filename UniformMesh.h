@@ -26,8 +26,11 @@ public:
     int getNumPoints() const override;
 
     // Retourne la position du point d'indice i
-    double getX(int i) const override;
+    double getX(int i) const override {return x_min + i * dx;}
+
+    // Retourne la taille du maillage   
     int x_size() const override {return num_points;}
 };
+
 
 #endif // UNIFORMMESH_H

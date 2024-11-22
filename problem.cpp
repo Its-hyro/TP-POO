@@ -22,13 +22,17 @@ void Problem::solve() {
     }
     // Resolution du probleme 
     std::cout << "--- Solve problem ---" << std::endl; 
+    equation.compute_initial_condition(u_k, mesh);
     equation.compute_boundary_condition(u_k, mesh);
     
     for (int iter = 1; iter <= num_iterations; ++iter){
         std::cout << "--- Iterative methode iteration : " << iter << " ---" << std::endl;
+        
+        // Condition aux bords
         equation.compute_boundary_condition(u_kp1, mesh);
         equation.compute(mesh);
 
+        // Update de u_k
         for (size_t i=0; i < u_k.size(); ++i){
             u_k[i] = u_kp1[i];
         }

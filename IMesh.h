@@ -10,7 +10,6 @@ public:
     virtual double getXMax() const = 0;
     virtual int getNumPoints() const = 0;
     virtual double getX(int i) const = 0;
-    virtual double getX(int i) const = 0;
     virtual int x_size() const = 0;
 };
 
