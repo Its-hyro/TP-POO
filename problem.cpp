@@ -1,41 +1,35 @@
 #include "problem.h"
+#include <spdlog/spdlog.h>
 #include <iostream>
-#include <stdexcept> 
 
-// Constructeur par défaut
-Problem::Problem(IMesh* mesh) : mesh(mesh), num_iterations(1), u_k(mesh), u_kp1(mesh) {
-    if (!mesh) { 
+Problem::Problem(std::shared_ptr<IMesh> mesh, Configuration config)
+    : mesh(mesh)
+    , config(config)
+    , u_k(mesh)
+    , u_kp1(mesh) 
+{
+    if (!mesh) {
         throw std::invalid_argument("Le maillage est nul.");
     }
-    std::cout << "Création d’une instance de Problem avec un maillage." << std::endl;
+    spdlog::info("Création d'une instance de Problem avec un maillage de {} points", 
+                 mesh->getNumPoints());
 }
 
-// Constructeur avec spécification du nombre d'itérations
-Problem::~Problem() {
-   // delete mesh;  // Nettoyage du pointeur
-}
-
-// Méthode pour résoudre le problème
-void Problem::solve() {
-    if (!mesh) {
-        throw std::runtime_error("Impossible de résoudre le problème : le maillage est nul.");
-    }
-    // Resolution du probleme 
-    std::cout << "--- Solve problem ---" << std::endl; 
-    equation.compute_initial_condition(u_k, mesh);
-    equation.compute_boundary_condition(u_k, mesh);
+bool Problem::has_converged() const {
+    double diff = u_kp1.max_difference(u_k);
+    double residual = compute_residual(u_kp1);
     
-    for (int iter = 1; iter <= num_iterations; ++iter){
-        std::cout << "--- Iterative methode iteration : " << iter << " ---" << std::endl;
-        
-        // Condition aux bords
-        equation.compute_boundary_condition(u_kp1, mesh);
-        equation.compute(mesh);
+    return diff < config.epsilon && residual < config.epsilon;
+}
 
-        // Update de u_k
-        for (size_t i=0; i < u_k.size(); ++i){
-            u_k[i] = u_kp1[i];
-        }
+double Problem::compute_residual(const Variable& u) const {
+    double max_residual = 0.0;
+    
+    for (int i = 1; i < mesh->x_size() - 1; ++i) {
+        double dx = mesh->getX(1) - mesh->getX(0);
+        double residual = (u[i-1] - 2*u[i] + u[i+1]) / (dx*dx);
+        max_residual = std::max(max_residual, std::abs(residual));
     }
-
+    
+    return max_residual;
 }

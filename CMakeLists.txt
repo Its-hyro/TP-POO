@@ -1,22 +1,53 @@
-cmake_minimum_required(VERSION 3.10)
-project(SimulatorProject)
+cmake_minimum_required(VERSION 3.14)
+project(SimulatorProject VERSION 1.0)
 
-# Utiliser le standard C++11
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
+# Options de compilation
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Fichiers sources de l'exécutable principal
-add_executable(Simulator main.cpp problem.cpp equation.cpp UniformMesh.cpp variable.cpp)
+# Options de build
+option(BUILD_TESTING "Build the testing tree." ON)
+option(ENABLE_WARNINGS "Enable warnings" ON)
 
-# Includer GTest
+# Compiler flags
+if(ENABLE_WARNINGS)
+    if(MSVC)
+        add_compile_options(/W4)
+    else()
+        add_compile_options(-Wall -Wextra -Wpedantic)
+    endif()
+endif()
+
+# Trouver les dépendances
+find_package(spdlog REQUIRED)
 find_package(GTest REQUIRED)
-include(GoogleTest)
 
-# Définir l'exécutable de test avant de spécifier les bibliothèques
-add_executable(UnitTests test_unit.cpp problem.cpp equation.cpp UniformMesh.cpp variable.cpp)
+# Définir les sources communes (sans main.cpp)
+set(COMMON_SOURCES
+    problem.cpp
+    equation.cpp
+    UniformMesh.cpp
+    variable.cpp
+)
 
-# Lier les bibliothèques GTest et GTest::Main
-target_link_libraries(UnitTests GTest::GTest GTest::Main)
+# Exécutable principal
+add_executable(Simulator main.cpp ${COMMON_SOURCES})
+target_link_libraries(Simulator PRIVATE spdlog::spdlog)
 
-# Découverte des tests pour CTest
-gtest_discover_tests(UnitTests)
+# Tests
+if(BUILD_TESTING)
+    enable_testing()
+    add_executable(UnitTests test_unit.cpp ${COMMON_SOURCES})
+    target_link_libraries(UnitTests PRIVATE 
+        GTest::GTest 
+        GTest::Main
+        spdlog::spdlog
+    )
+    gtest_discover_tests(UnitTests)
+endif()
+
+# Installation
+install(TARGETS Simulator
+    RUNTIME DESTINATION bin
+)
