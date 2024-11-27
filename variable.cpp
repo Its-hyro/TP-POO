@@ -20,15 +20,15 @@ Variable& Variable::operator=(const Variable& other) {
     return *this;
 }
 
-double& Variable::operator[](int i) {
-    if (i < 0 || i >= static_cast<int>(values.size())) {
+double& Variable::operator[](size_t i) {
+    if (i >= values.size()) {
         throw std::out_of_range("Index hors limites");
     }
     return values[i];
 }
 
-const double& Variable::operator[](int i) const {
-    if (i < 0 || i >= static_cast<int>(values.size())) {
+const double& Variable::operator[](size_t i) const {
+    if (i >= values.size()) {
         throw std::out_of_range("Index hors limites");
     }
     return values[i];

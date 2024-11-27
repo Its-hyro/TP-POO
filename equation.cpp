@@ -12,7 +12,7 @@ void Equation::compute(std::shared_ptr<IMesh> mesh, Variable& u_k, Variable& u_k
     }
     
     // Calcul selon la méthode de Jacobi
-    for (int i = 1; i < mesh->x_size() - 1; ++i) {
+    for (size_t i = 1; i < static_cast<size_t>(mesh->x_size() - 1); ++i) {
         u_kp1[i] = (u_k[i-1] + u_k[i+1]) / 2.0;
     }
     
@@ -21,7 +21,7 @@ void Equation::compute(std::shared_ptr<IMesh> mesh, Variable& u_k, Variable& u_k
 }
 
 void Equation::compute_initial_condition(Variable& u, std::shared_ptr<IMesh> mesh) {
-    for (int i = 0; i < mesh->x_size(); ++i) {
+    for (size_t i = 0; i < static_cast<size_t>(mesh->x_size()); ++i) {
         double x = mesh->getX(i);
         u[i] = params.initial_condition(x);
     }

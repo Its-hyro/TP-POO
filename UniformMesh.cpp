@@ -25,3 +25,7 @@ int UniformMesh::getNumPoints() const {
     return num_points;
 }
 
+size_t UniformMesh::x_size() const {
+    return static_cast<size_t>(num_points);
+}
+

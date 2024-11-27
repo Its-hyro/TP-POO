@@ -96,6 +96,30 @@ TEST_F(ProblemTest, PerformanceTest) {
     EXPECT_LT(duration.count(), 1000); // Test doit finir en moins d'une seconde
 }
 
+TEST_F(ProblemTest, ExactSolutionTest) {
+    // Configuration
+    Problem::Configuration config;
+    config.epsilon = 1e-6;
+    
+    // Création du problème
+    Problem problem(mesh, config);
+    
+    // Résolution
+    problem.solve<Jacobi>();
+    
+    // Récupération des solutions
+    const Variable& numerical = problem.get_solution();
+    const Variable& exact = problem.get_exact_solution();
+    
+    // Vérification de la convergence vers la solution exacte
+    for(size_t i = 0; i < mesh->x_size(); ++i) {
+        double x = mesh->getX(i);
+        double expected = (15.0 - 30.0) * x + 30.0;  // T2 = 15, T1 = 30
+        EXPECT_NEAR(numerical[i], expected, 1.5e-5);
+        EXPECT_NEAR(exact[i], expected, 1e-10);
+    }
+}
+
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     ::testing::AddGlobalTestEnvironment(new TestEnvironment);

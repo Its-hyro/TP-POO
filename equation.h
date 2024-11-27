@@ -38,6 +38,7 @@ public:
         solver.compute_iteration(u_k, u_kp1);
         compute_boundary_condition(u_kp1, *mesh);
     }
+    
     // Conditions
     void compute_initial_condition(Variable& u, std::shared_ptr<IMesh> mesh);
     void compute_boundary_condition(Variable& u_kp1, const IMesh& mesh);
@@ -45,6 +46,16 @@ public:
     // Setters pour les paramètres
     void set_temperatures(double T1, double T2);
     void set_initial_condition(std::function<double(double)> func);
+
+    void compute_exact_solution(Variable& u_ref, std::shared_ptr<IMesh> mesh) {
+        if (!mesh) {
+            throw std::invalid_argument("Maillage invalide");
+        }
+        for (size_t i = 0; i < mesh->x_size(); ++i) {
+            double x = mesh->getX(i);
+            u_ref[i] = (params.T2 - params.T1) * x + params.T1;
+        }
+    }
 };
 
 #endif // EQUATION_H

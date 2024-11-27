@@ -23,15 +23,15 @@ private:
     Configuration config;
     Variable u_k;
     Variable u_kp1;
+    Variable u_ref;
 
 public:
-    Problem(std::shared_ptr<IMesh> mesh, Configuration config);
+    Problem(std::shared_ptr<IMesh> mesh, Configuration config = Configuration{});
     
     template<typename SolverType>
     void solve() {
-        // Initialisation
-        equation.compute_initial_condition(u_k, mesh);
-        equation.compute_boundary_condition(u_k, *mesh);
+        // Calcul de la solution exacte
+        equation.compute_exact_solution(u_ref, mesh);
         
         int iter = 0;
         double diff;
@@ -52,6 +52,7 @@ public:
     
     bool has_converged() const;
     const Variable& get_solution() const { return u_kp1; }
+    const Variable& get_exact_solution() const { return u_ref; }
     
     // Accesseurs pour la configuration
     void set_epsilon(double eps) { config.epsilon = eps; }

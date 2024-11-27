@@ -29,7 +29,7 @@ public:
     double getX(int i) const override {return x_min + i * dx;}
 
     // Retourne la taille du maillage   
-    int x_size() const override {return num_points;}
+    size_t x_size() const override;
 };
 
 

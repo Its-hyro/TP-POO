@@ -4,24 +4,33 @@
 #include <vector>
 #include <memory>
 #include <iterator>
+#include <string>
 #include "IMesh.h"
 
 class Variable {
 private:
     std::vector<double> values;             
-    std::shared_ptr<IMesh> mesh;            // Utilisation de shared_ptr au lieu d'un pointeur brut
+    std::shared_ptr<IMesh> mesh;            
+    std::string name;  // Nouveau champ pour le nom
 
 public:
-    // Constructeurs
-    explicit Variable(std::shared_ptr<IMesh> mesh);
-    Variable(const Variable& other);         // Constructeur de copie
-    Variable& operator=(const Variable& other); // Opérateur d'affectation
+    // Nouveau constructeur avec nom
+    Variable(std::shared_ptr<IMesh> mesh, const std::string& name)
+        : mesh(mesh), name(name) {
+        if (!mesh) throw std::invalid_argument("Le maillage est nul");
+        values.resize(mesh->getNumPoints(), 0.0);
+    }
     
-    // Accès aux éléments
-    double& operator[](int i);              
-    const double& operator[](int i) const;  
+    // Constructeur existant qui délègue au nouveau
+    explicit Variable(std::shared_ptr<IMesh> mesh);
+        
+    // Les autres constructeurs et méthodes restent inchangés
+    Variable(const Variable& other);         
+    Variable& operator=(const Variable& other);
+    
+    double& operator[](size_t i);              
+    const double& operator[](size_t i) const;  
 
-    // Itérateurs
     using iterator = std::vector<double>::iterator;
     using const_iterator = std::vector<double>::const_iterator;
     
@@ -30,10 +39,12 @@ public:
     const_iterator begin() const { return values.begin(); }
     const_iterator end() const { return values.end(); }
 
-    // Utilitaires
     size_t size() const;
-    void reset(double value = 0.0);  // Réinitialise toutes les valeurs
-    double max_difference(const Variable& other) const;  // Pour le calcul de convergence
+    void reset(double value = 0.0);
+    double max_difference(const Variable& other) const;
+    
+    // Nouvelle méthode pour accéder au nom
+    const std::string& getName() const { return name; }
 };
 
 #endif // VARIABLE_H
