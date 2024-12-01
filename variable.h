@@ -6,6 +6,8 @@
 #include <iterator>
 #include <string>
 #include "IMesh.h"
+#include <fstream>
+#include <spdlog/spdlog.h>
 
 class Variable {
 private:
@@ -14,17 +16,9 @@ private:
     std::string name;  // Nouveau champ pour le nom
 
 public:
-    // Nouveau constructeur avec nom
-    Variable(std::shared_ptr<IMesh> mesh, const std::string& name)
-        : mesh(mesh), name(name) {
-        if (!mesh) throw std::invalid_argument("Le maillage est nul");
-        values.resize(mesh->getNumPoints(), 0.0);
-    }
-    
-    // Constructeur existant qui délègue au nouveau
+    // Déclaration uniquement des constructeurs
+    Variable(std::shared_ptr<IMesh> mesh, const std::string& name);
     explicit Variable(std::shared_ptr<IMesh> mesh);
-        
-    // Les autres constructeurs et méthodes restent inchangés
     Variable(const Variable& other);         
     Variable& operator=(const Variable& other);
     
@@ -45,6 +39,25 @@ public:
     
     // Nouvelle méthode pour accéder au nom
     const std::string& getName() const { return name; }
+
+    void print(const std::string& filename) const {
+        std::ofstream file(filename);
+        if (!file) {
+            throw std::runtime_error("Impossible d'ouvrir le fichier " + filename);
+        }
+        
+        // Ajout d'un en-tête pour gnuplot
+        file << "# x\t" << name << "\n";
+        
+        // Export des données au format x y
+        for (size_t i = 0; i < values.size(); ++i) {
+            file << mesh->getX(i) << "\t" << values[i] << "\n";
+        }
+        
+        spdlog::info("Données exportées dans {}", filename);
+    }
+
+    void print() const;
 };
 
 #endif // VARIABLE_H

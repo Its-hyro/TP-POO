@@ -23,6 +23,9 @@ endif()
 find_package(spdlog REQUIRED)
 find_package(GTest REQUIRED)
 
+# Ajout des chemins d'inclusion
+include_directories(${spdlog_INCLUDE_DIRS})
+
 # Définir les sources communes (sans main.cpp)
 set(COMMON_SOURCES
     problem.cpp
@@ -34,6 +37,7 @@ set(COMMON_SOURCES
 # Exécutable principal
 add_executable(Simulator main.cpp ${COMMON_SOURCES})
 target_link_libraries(Simulator PRIVATE spdlog::spdlog)
+target_include_directories(Simulator PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Tests
 if(BUILD_TESTING)
@@ -44,6 +48,7 @@ if(BUILD_TESTING)
         GTest::Main
         spdlog::spdlog
     )
+    target_include_directories(UnitTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
     gtest_discover_tests(UnitTests)
 endif()
 

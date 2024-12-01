@@ -8,13 +8,36 @@ Problem::Problem(std::shared_ptr<IMesh> mesh, Configuration config)
     , config(config)
     , u_k(mesh)
     , u_kp1(mesh)
-    , u_ref(mesh)
+    , u_k_jacobi(mesh, "jacobi_k")
+    , u_kp1_jacobi(mesh, "jacobi_kp1")
+    , u_k_gauss(mesh, "gauss_k")
+    , u_kp1_gauss(mesh, "gauss_kp1")
+    , u_ref(mesh, "reference")
+    , solution(mesh, "solution")    
 {
     if (!mesh) {
         throw std::invalid_argument("Le maillage est nul.");
     }
+    
+    initializeBoundaryConditions();
+    
     spdlog::info("Création d'une instance de Problem avec un maillage de {} points", 
                  mesh->getNumPoints());
+}
+
+void Problem::initializeBoundaryConditions() {
+    auto initVariable = [this](Variable& var) {
+        var[0] = config.T1;
+        var[mesh->getNumPoints() - 1] = config.T2;
+    };
+    
+    initVariable(u_k);
+    initVariable(u_kp1);
+    initVariable(u_k_jacobi);
+    initVariable(u_kp1_jacobi);
+    initVariable(u_k_gauss);
+    initVariable(u_kp1_gauss);
+    initVariable(solution);
 }
 
 bool Problem::has_converged() const {
