@@ -10,6 +10,12 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 option(BUILD_TESTING "Build the testing tree." ON)
 option(ENABLE_WARNINGS "Enable warnings" ON)
 
+# Recherche d'OpenMP
+find_package(OpenMP)
+if(OpenMP_CXX_FOUND)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+endif()
+
 # Compiler flags
 if(ENABLE_WARNINGS)
     if(MSVC)
@@ -22,6 +28,8 @@ endif()
 # Trouver les dépendances
 find_package(spdlog REQUIRED)
 find_package(GTest REQUIRED)
+find_package(Threads REQUIRED)
+find_package(TBB REQUIRED)
 
 # Ajout des chemins d'inclusion
 include_directories(${spdlog_INCLUDE_DIRS})
@@ -32,11 +40,19 @@ set(COMMON_SOURCES
     equation.cpp
     UniformMesh.cpp
     variable.cpp
+    Timer.cpp
 )
 
 # Exécutable principal
 add_executable(Simulator main.cpp ${COMMON_SOURCES})
-target_link_libraries(Simulator PRIVATE spdlog::spdlog)
+target_link_libraries(Simulator PRIVATE 
+    spdlog::spdlog
+    Threads::Threads
+    TBB::tbb
+)
+if(OpenMP_CXX_FOUND)
+    target_link_libraries(Simulator PRIVATE OpenMP::OpenMP_CXX)
+endif()
 target_include_directories(Simulator PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Tests
@@ -47,7 +63,12 @@ if(BUILD_TESTING)
         GTest::GTest 
         GTest::Main
         spdlog::spdlog
+        Threads::Threads
+        TBB::tbb
     )
+    if(OpenMP_CXX_FOUND)
+        target_link_libraries(UnitTests PRIVATE OpenMP::OpenMP_CXX)
+    endif()
     target_include_directories(UnitTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
     gtest_discover_tests(UnitTests)
 endif()

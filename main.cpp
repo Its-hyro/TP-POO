@@ -6,60 +6,63 @@
 #include "solvers/GaussSeidel.h"
 
 void setup_logging() {
-    // Configuration du logging
-    spdlog::set_level(spdlog::level::debug);
-    spdlog::set_pattern("[%H:%M:%S.%e] [%^%l%$] %v");
-}
-
-void iteration_callback(int iter, double diff) {
-    spdlog::debug("Itération {} : différence = {}", iter, diff);
+    // Configuration minimale du logging pour ne pas impacter les performances
+    spdlog::set_level(spdlog::level::warn);
 }
 
 int main() { 
     try {
         setup_logging();
-        spdlog::info("Début du programme principal");
 
-        // Configuration du problème
+        // Configuration du problème pour les tests de performance
         Problem::Configuration config;
         config.epsilon = 1e-6;
-        config.max_iterations = 2000;
-        config.verbose = true;
+        config.max_iterations = 100;  // Limité à 100 itérations comme demandé dans le TD5
+        config.verbose = false;       // Désactivation des sorties pour les performances
         config.T1 = 30.0;
         config.T2 = 15.0;
-        config.iteration_callback = iteration_callback;
+        config.iteration_callback = nullptr;  // Désactivation du callback pour les performances
 
-        // Création du maillage
-        auto mesh = std::make_shared<UniformMesh>(0.0, 1.0, 0.01); // 100 points
-        spdlog::info("Maillage créé avec {} points", mesh->getNumPoints());
+        // Création du maillage avec une discrétisation fine (δx = 10^-6)
+        auto mesh = std::make_shared<UniformMesh>(0.0, 1.0, 1e-6);
 
-        // Création et résolution du problème
+        // Création du problème
         Problem problem(mesh, config);
         
-        // Résolution avec Jacobi
+        std::cout << "\n=== Test de performance avec dx = 1e-6 et 100 itérations ===\n" << std::endl;
+        
+        // 1. Version séquentielle classique
+        std::cout << "1. Version séquentielle :" << std::endl;
+        std::cout << "------------------------" << std::endl;
+        
+        std::cout << "Méthode de Jacobi :" << std::endl;
         problem.solve<Jacobi>();
-        spdlog::info("Résidu final Jacobi: {}", 
-                     problem.compute_residual(problem.get_jacobi_solution()));
         
-        // Résolution avec Gauss-Seidel
+        std::cout << "\nMéthode de Gauss-Seidel :" << std::endl;
         problem.solve<GaussSeidel>();
-        spdlog::info("Résidu final Gauss-Seidel: {}", 
-                     problem.compute_residual(problem.get_gauss_solution()));
         
-        // Export des résultats pour comparaison
-        problem.get_jacobi_solution().print("jacobi_solution.dat");
-        problem.get_gauss_solution().print("gauss_solution.dat");
-        problem.get_exact_solution().print("exact_solution.dat");
+        // 2. Version parallèle avec std::thread
+        std::cout << "\n2. Version parallèle (threads) :" << std::endl;
+        std::cout << "------------------------------" << std::endl;
+        problem.solve_parallel();
         
-        // Génération des graphiques avec gnuplot
-        spdlog::info("Génération des graphiques...");
-        system("chmod +x plot_solutions.gp");  // Rendre le script exécutable
-        system("./plot_solutions.gp");
-        spdlog::info("Graphiques générés : solutions_comparison.png, jacobi_evolution.png, gauss_evolution.png");
+        // 3. Version parallèle avec std::async
+        std::cout << "\n3. Version parallèle (async) :" << std::endl;
+        std::cout << "---------------------------" << std::endl;
+        problem.solve_parallel_async(std::launch::async);
         
-        spdlog::info("Fin du programme principal");
+        // 4. Version séquentielle avec std::async deferred
+        std::cout << "\n4. Version séquentielle (async deferred) :" << std::endl;
+        std::cout << "---------------------------------------" << std::endl;
+        problem.solve_parallel_async(std::launch::deferred);
+        
+        // 5. Version parallèle STL/TBB (Jacobi uniquement)
+        std::cout << "\n5. Version parallèle STL/TBB (Jacobi uniquement) :" << std::endl;
+        std::cout << "----------------------------------------------" << std::endl;
+        problem.solve_parallel_stl();
+
     } catch (const std::exception& e) { 
-        spdlog::error("Erreur : {}", e.what());
+        std::cerr << "Erreur : " << e.what() << std::endl;
         return 1;
     }
 

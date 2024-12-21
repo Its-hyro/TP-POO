@@ -1,4 +1,6 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/UnitTests.dir/Timer.cpp.o"
+  "CMakeFiles/UnitTests.dir/Timer.cpp.o.d"
   "CMakeFiles/UnitTests.dir/UniformMesh.cpp.o"
   "CMakeFiles/UnitTests.dir/UniformMesh.cpp.o.d"
   "CMakeFiles/UnitTests.dir/equation.cpp.o"

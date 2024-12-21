@@ -57,10 +57,10 @@ RM = /opt/homebrew/Cellar/cmake/3.30.3/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/doriandrivet/TD-POO/TP-POO
+CMAKE_SOURCE_DIR = "/Users/doriandrivet/Desktop/dorian/MASTER 1/POO/TD-POO/TP-POO"
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/doriandrivet/TD-POO/build
+CMAKE_BINARY_DIR = "/Users/doriandrivet/Desktop/dorian/MASTER 1/POO/TD-POO/TP-POO/build"
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -142,9 +142,9 @@ install/strip/fast: preinstall/fast
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/doriandrivet/TD-POO/build/CMakeFiles /Users/doriandrivet/TD-POO/build//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start "/Users/doriandrivet/Desktop/dorian/MASTER 1/POO/TD-POO/TP-POO/build/CMakeFiles" "/Users/doriandrivet/Desktop/dorian/MASTER 1/POO/TD-POO/TP-POO/build//CMakeFiles/progress.marks"
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/doriandrivet/TD-POO/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start "/Users/doriandrivet/Desktop/dorian/MASTER 1/POO/TD-POO/TP-POO/build/CMakeFiles" 0
 .PHONY : all
 
 # The main clean target
@@ -196,6 +196,33 @@ UnitTests: cmake_check_build_system
 UnitTests/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/UnitTests.dir/build.make CMakeFiles/UnitTests.dir/build
 .PHONY : UnitTests/fast
+
+Timer.o: Timer.cpp.o
+.PHONY : Timer.o
+
+# target to build an object file
+Timer.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Simulator.dir/build.make CMakeFiles/Simulator.dir/Timer.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UnitTests.dir/build.make CMakeFiles/UnitTests.dir/Timer.cpp.o
+.PHONY : Timer.cpp.o
+
+Timer.i: Timer.cpp.i
+.PHONY : Timer.i
+
+# target to preprocess a source file
+Timer.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Simulator.dir/build.make CMakeFiles/Simulator.dir/Timer.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UnitTests.dir/build.make CMakeFiles/UnitTests.dir/Timer.cpp.i
+.PHONY : Timer.cpp.i
+
+Timer.s: Timer.cpp.s
+.PHONY : Timer.s
+
+# target to generate assembly for a file
+Timer.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Simulator.dir/build.make CMakeFiles/Simulator.dir/Timer.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UnitTests.dir/build.make CMakeFiles/UnitTests.dir/Timer.cpp.s
+.PHONY : Timer.cpp.s
 
 UniformMesh.o: UniformMesh.cpp.o
 .PHONY : UniformMesh.o
@@ -368,6 +395,9 @@ help:
 	@echo "... test"
 	@echo "... Simulator"
 	@echo "... UnitTests"
+	@echo "... Timer.o"
+	@echo "... Timer.i"
+	@echo "... Timer.s"
 	@echo "... UniformMesh.o"
 	@echo "... UniformMesh.i"
 	@echo "... UniformMesh.s"

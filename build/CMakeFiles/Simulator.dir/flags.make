@@ -4,9 +4,9 @@
 # compile CXX with /Library/Developer/CommandLineTools/usr/bin/c++
 CXX_DEFINES = -DFMT_SHARED -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB
 
-CXX_INCLUDES = -I/Users/doriandrivet/TD-POO/TP-POO -isystem /opt/homebrew/include
+CXX_INCLUDES = -I"/Users/doriandrivet/Desktop/dorian/MASTER 1/POO/TD-POO/TP-POO" -isystem /opt/homebrew/include
 
-CXX_FLAGSarm64 = -std=c++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.1.sdk -Wall -Wextra -Wpedantic
+CXX_FLAGSarm64 = -O3 -DNDEBUG -std=c++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk -Wall -Wextra -Wpedantic
 
-CXX_FLAGS = -std=c++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.1.sdk -Wall -Wextra -Wpedantic
+CXX_FLAGS = -O3 -DNDEBUG -std=c++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk -Wall -Wextra -Wpedantic
 
