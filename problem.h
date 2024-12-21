@@ -63,9 +63,6 @@ public:
         
         total_timer.start();
         
-        // Calcul de la solution exacte
-        equation.compute_exact_solution(u_ref, mesh);
-        
         // Sélection des variables selon le solveur
         Variable& u_k = std::is_same_v<SolverType, Jacobi> ? u_k_jacobi : u_k_gauss;
         Variable& u_kp1 = std::is_same_v<SolverType, Jacobi> ? u_kp1_jacobi : u_kp1_gauss;
@@ -78,6 +75,7 @@ public:
         
         int iter = 0;
         double diff;
+        double residual;
         
         // Démarrage du timer pour la méthode itérative
         solver_timer.start();
@@ -85,6 +83,7 @@ public:
         do {
             equation.compute_for_solver<SolverType>(u_k, u_kp1, mesh);
             diff = u_kp1.max_difference(u_k);
+            residual = compute_residual(u_kp1);
             u_k = u_kp1;
             
             // Export intermédiaire optionnel (tous les N itérations)
@@ -99,7 +98,10 @@ public:
             }
             
             iter++;
-        } while (iter < config.max_iterations && diff > config.epsilon);
+        } while (iter < config.max_iterations && (diff > config.epsilon || residual > config.epsilon));
+
+        // Mise à jour de la solution finale
+        solution = u_kp1;
 
         // Arrêt du timer pour la méthode itérative
         solver_timer.stop();
@@ -115,9 +117,6 @@ public:
         solver_timer.print();
         
         u_ref.print("exact_solution.dat");
-
-        // Mise à jour de la solution finale
-        solution = u_kp1;
         
         total_timer.stop();
         std::cout << "Temps total d'exécution : ";

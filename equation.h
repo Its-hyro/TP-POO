@@ -20,6 +20,12 @@ public:
                 return x <= 0.5 ? T1 : T2;
             };
         }
+
+        Parameters(double t1, double t2) : T1(t1), T2(t2) {
+            initial_condition = [this](double x) {
+                return x <= 0.5 ? T1 : T2;
+            };
+        }
     };
 
 private:

@@ -29,10 +29,19 @@ endif()
 find_package(spdlog REQUIRED)
 find_package(GTest REQUIRED)
 find_package(Threads REQUIRED)
+
+# Configuration de TBB
+if(APPLE)
+    # Sur macOS, TBB est installé via Homebrew
+    set(TBB_DIR "/opt/homebrew/lib/cmake/TBB")
+endif()
 find_package(TBB REQUIRED)
 
 # Ajout des chemins d'inclusion
 include_directories(${spdlog_INCLUDE_DIRS})
+if(APPLE)
+    include_directories("/opt/homebrew/include")
+endif()
 
 # Définir les sources communes (sans main.cpp)
 set(COMMON_SOURCES

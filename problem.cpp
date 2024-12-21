@@ -3,7 +3,7 @@
 #include <iostream>
 
 Problem::Problem(std::shared_ptr<IMesh> mesh, Configuration config)
-    : equation()
+    : equation(Equation::Parameters(config.T1, config.T2))
     , mesh(mesh)
     , config(config)
     , u_k(mesh)
@@ -20,6 +20,7 @@ Problem::Problem(std::shared_ptr<IMesh> mesh, Configuration config)
     }
     
     initializeBoundaryConditions();
+    equation.compute_exact_solution(u_ref, mesh);
     
     spdlog::info("Création d'une instance de Problem avec un maillage de {} points", 
                  mesh->getNumPoints());
@@ -41,10 +42,9 @@ void Problem::initializeBoundaryConditions() {
 }
 
 bool Problem::has_converged() const {
-    double diff = u_kp1.max_difference(u_k);
-    double residual = compute_residual(u_kp1);
+    double residual = compute_residual(solution);
     
-    return diff < config.epsilon && residual < config.epsilon;
+    return residual < config.epsilon;
 }
 
 double Problem::compute_residual(const Variable& u) const {
@@ -52,8 +52,8 @@ double Problem::compute_residual(const Variable& u) const {
     
     for (size_t i = 1; i < static_cast<size_t>(mesh->x_size() - 1); ++i) {
         double dx = mesh->getX(1) - mesh->getX(0);
-        double residual = (u[i-1] - 2*u[i] + u[i+1]) / (dx*dx);
-        max_residual = std::max(max_residual, std::abs(residual));
+        double residual = std::abs((u[i-1] - 2*u[i] + u[i+1]) / (dx*dx));
+        max_residual = std::max(max_residual, residual);
     }
     
     return max_residual;
